@@ -1,4 +1,16 @@
-   private SensorManager sensorManager=null;
+package com.sihua.day1031;
+
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+public class CiChang extends AppCompatActivity {
+
+  private SensorManager sensorManager=null;
     private Sensor sensor=null;
     private SensorEventListener sensorEventListener=null;
     private TextView cichangTextView;
@@ -87,5 +99,3 @@
         sensorManager.unregisterListener(sensorEventListener_a);
     }
 }
-
-    
