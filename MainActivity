@@ -1,0 +1,91 @@
+   private SensorManager sensorManager=null;
+    private Sensor sensor=null;
+    private SensorEventListener sensorEventListener=null;
+    private TextView cichangTextView;
+//    加速度传感器
+    private Sensor sensor_a=null;
+    private SensorEventListener sensorEventListener_a=null;
+
+//    申请计算需要的数组
+//    用来保存加速度传感器结果的数组
+    private float[] values1=new float[3];
+//    用来保存磁场传感器的结果的数组
+    private float[]  values2=new float[3];
+//    第一次计算结果有九个值，需要把它保存起来
+    private float[] r=new float[9];
+//    用于保存第二次计算的结果，就是绕X,Y,Z方向旋转的角度了
+    private float[] values3=new float[3];
+    
+      @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ci_chang);
+
+        cichangTextView= (TextView) findViewById(R.id.cichangTextView);
+
+        sensorManager= (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        sensor=sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        sensor_a=sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        sensorEventListener=new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+//                event里面有的三个值，描述三个方向的磁通量
+//                三个方向的磁通量的单位为微特斯拉
+
+//                cichangTextView.setText("");
+//                cichangTextView.append("X方向的磁通量："+event.values[0]+"\n");
+//                cichangTextView.append("Y方向的磁通量："+event.values[1]+"\n");
+//                cichangTextView.append("Z方向的磁通量："+event.values[2]+"\n");
+
+                values2[0]=event.values[0];
+                values2[1]=event.values[1];
+                values2[2]=event.values[2];
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+        sensorEventListener_a=new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+
+                values1[0]=event.values[0];
+                values1[1]=event.values[1];
+                values1[2]=event.values[2];
+//                第一次计算
+                SensorManager.getRotationMatrix(r,null,values1,values2);
+//                第二次计算.
+                SensorManager.getOrientation(r,values3);
+//                此后，values3就是XYZ三个方向的旋转量
+
+                cichangTextView.setText("");
+                cichangTextView.append("绕X旋转了："+values3[0]+"\n");
+                cichangTextView.append("绕Y旋转了："+values3[1]+"\n");
+                cichangTextView.append("绕Z旋转了："+values3[2]+"\n");
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+
+        sensorManager.registerListener(sensorEventListener_a,sensor,SensorManager.SENSOR_DELAY_GAME);
+
+        sensorManager.registerListener(sensorEventListener,sensor,SensorManager.SENSOR_DELAY_GAME);
+        
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sensorManager.unregisterListener(sensorEventListener);
+        sensorManager.unregisterListener(sensorEventListener_a);
+    }
+}
+
+    
